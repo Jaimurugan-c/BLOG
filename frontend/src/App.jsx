@@ -5,6 +5,7 @@ import Blog from "./Pages/Blog";
 import Login from "./Pages/Login";
 
 import Signup from "./Pages/Signup";
+import Footer from "./components/Footer";
 function App() {
   return (
     <Router>
@@ -14,7 +15,9 @@ function App() {
         <Route path="/blog" element={<Blog />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
+       
       </Routes>
+      <Footer/>
     </Router>
   );
 }
