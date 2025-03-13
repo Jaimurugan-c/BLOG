@@ -1,0 +1,11 @@
+body {
+    background-color: #fff3e0;
+    font-family: Arial, sans-serif;
+  }
+  .navbar {
+    background-color: #ff9800 !important;
+  }
+  .navbar-brand, .nav-link {
+    color: white !important;
+  }
+  
