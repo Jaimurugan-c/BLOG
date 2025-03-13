@@ -1,71 +1,43 @@
 import express from "express";
+import multer from "multer";
 import Post from "../models/Post.js";
 
 const router = express.Router();
 
-// ✅ Create a new blog post
-router.post("/", async (req, res) => {
+// Configure Multer for file uploads
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, "uploads/"); // Store files in 'uploads' folder
+  },
+  filename: (req, file, cb) => {
+    cb(null, Date.now() + "-" + file.originalname); // Unique file name
+  },
+});
+
+const upload = multer({ storage });
+
+// Create a new post with an image
+router.post("/", upload.single("image"), async (req, res) => {
   try {
-    const { title, content, author, image } = req.body;
+    const { title, content } = req.body;
+    const imageUrl = req.file ? `/uploads/${req.file.filename}` : null;
 
-    if (!title || !content || !author) {
-      return res.status(400).json({ message: "Title, content, and author are required" });
-    }
-
-    const newPost = new Post({ title, content, author, image });
+    const newPost = new Post({ title, content, image: imageUrl });
     await newPost.save();
 
     res.status(201).json(newPost);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ message: "Error creating post", error });
   }
 });
 
-// ✅ Get all blog posts
+// Get all posts
 router.get("/", async (req, res) => {
   try {
-    const posts = await Post.find().sort({ createdAt: -1 }); // Sort by latest
-    res.status(200).json(posts);
+    const posts = await Post.find();
+    res.json(posts);
   } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-});
-
-// ✅ Get a single blog post by ID
-router.get("/:id", async (req, res) => {
-  try {
-    const post = await Post.findById(req.params.id);
-    if (!post) return res.status(404).json({ message: "Post not found" });
-
-    res.status(200).json(post);
-  } catch (error) {
-    res.status(500).json({ message: "Invalid ID or server error" });
-  }
-});
-
-// ✅ Update a blog post
-router.put("/:id", async (req, res) => {
-  try {
-    const post = await Post.findById(req.params.id);
-    if (!post) return res.status(404).json({ message: "Post not found" });
-
-    const updatedPost = await Post.findByIdAndUpdate(req.params.id, req.body, { new: true });
-    res.status(200).json(updatedPost);
-  } catch (error) {
-    res.status(500).json({ message: "Invalid ID or server error" });
-  }
-});
-
-// ✅ Delete a blog post
-router.delete("/:id", async (req, res) => {
-  try {
-    const post = await Post.findById(req.params.id);
-    if (!post) return res.status(404).json({ message: "Post not found" });
-
-    await Post.findByIdAndDelete(req.params.id);
-    res.status(200).json({ message: "Post deleted successfully" });
-  } catch (error) {
-    res.status(500).json({ message: "Invalid ID or server error" });
+    res.status(500).json({ message: "Error fetching posts", error });
   }
 });
 
