@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, BrowserRouter } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import Home from "./pages/Home";
 import Blog from "./pages/Blog";
@@ -7,10 +7,12 @@ import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import CreatePost from "./pages/CreatePost";
 import EditPost from "./pages/EditPost";
-import ProtectedRoute from "./components/ProtectedRoute";
+import ProtectedRoute from "./components/ProctedRoute";
+
 
 const App = () => {
   return (
+    <BrowserRouter>
     <Router>
       <Navbar />
       <Routes>
@@ -23,6 +25,7 @@ const App = () => {
         <Route path="/edit/:id" element={<ProtectedRoute><EditPost /></ProtectedRoute>} />
       </Routes>
     </Router>
+    </BrowserRouter>
   );
 };
 
