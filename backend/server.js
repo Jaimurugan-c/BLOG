@@ -1,27 +1,24 @@
-import express from "express";   // ✅ Import express first
+import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
 import mongoose from "mongoose";
-
-import blogRoutes from "./routes/blogRoutes.js";  // ✅ Import routes AFTER express
+import blogRoutes from "./routes/blogRoutes.js"; // ✅ Import blog routes
 
 dotenv.config();
+const app = express();
 
-const app = express();  // ✅ Initialize `app` AFTER imports
-
-app.use(express.json());
+// Middleware
 app.use(cors());
+app.use(express.json());
 
-// ✅ Use routes after initializing `app`
-app.use("/api/blogs", blogRoutes);
+// Routes
+app.use("/api/blogs", blogRoutes); // ✅ Connect the blog routes
+
+// Database Connection
+mongoose
+  .connect(process.env.MONGO_URI)
+  .then(() => console.log("MongoDB Connected"))
+  .catch((err) => console.log("DB Connection Error: ", err));
 
 const PORT = process.env.PORT || 5000;
-
-// ✅ Connect to MongoDB
-mongoose
-  .connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
-  .then(() => {
-    console.log("MongoDB Connected");
-    app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
-  })
-  .catch((error) => console.error("MongoDB connection error:", error));
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
